@@ -11,5 +11,5 @@ export default async function HomePage() {
 
   const list = data.map((org) => <li>{org.name}</li>);
 
-  return (<ul>{list}</ul>);
+  return <ul>{list}</ul>;
 }

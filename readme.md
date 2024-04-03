@@ -11,3 +11,9 @@ Add prettier.
 ```
 bun add -d prettier prettier-plugin-tailwindcss
 ```
+
+Add & setup `shadcn/ui`.
+
+```
+bunx shadcn-ui@latest init
+```
