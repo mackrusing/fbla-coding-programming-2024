@@ -27,4 +27,29 @@ export function createNumeric(str: any) {
   // parse the int
   return parseInt(str, 10);
 }
-  
+
+export function constructHomePageUrl(search: string, page: number) {
+  let urlParams = new URLSearchParams();
+
+  if (search) {
+    urlParams.append("q", encodeURIComponent(search));
+  }
+
+  if (page > 1) {
+    urlParams.append("p", encodeURIComponent(page));
+  }
+
+  return "/?" + urlParams.toString();
+}
+
+export function parseOrgType(type: "Business" | "NonProfit" | "Gov") {
+  if (type === "NonProfit") {
+    return "Non Profit";
+  }
+
+  if (type === "Gov") {
+    return "Government";
+  }
+
+  return type;
+}
