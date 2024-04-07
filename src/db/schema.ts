@@ -12,7 +12,7 @@ export const orgsTable = sqliteTable(
   {
     // org info
     id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    name: text("name").notNull().unique(),
+    name: text("name").notNull(),
     type: text("type", { enum: ["Business", "NonProfit", "Gov"] }).notNull(),
     website: text("website"),
     email: text("email"),
