@@ -16,6 +16,7 @@ export async function DataTable({
   search: string;
   page: number;
 }) {
+  // fetch data from db
   const data = await db
     .select()
     .from(orgsTable)

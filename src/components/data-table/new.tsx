@@ -2,12 +2,19 @@
 
 // form
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 // ui
 import { Button } from "@/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogClose } from "@/ui/dialog";
-import { Table as UiTable, TableBody, TableRow, TableCell } from "@/ui/table";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+  DialogDescription,
+  DialogHeader,
+} from "@/ui/dialog";
 import { Input } from "@/ui/input";
 import {
   Select,
@@ -19,7 +26,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -31,40 +37,34 @@ import { PlusIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 // actions
 import { addOrg } from "@/actions/db-actions";
+// lib
+import { parsePhone } from "@/lib/utils";
 
 // schemas
 const form1Schema = z.object({
   name: z.string().min(2, { message: "Please enter a name" }),
   type: z.enum(["Business", "NonProfit", "Gov"]),
 });
-
 const form2Schema = z.object({
-  website: z
-    .string()
-    .regex(/[\w\d\-]+\.[\w\d\-\.]+/, {
-      message: 'Please enter a valid url in the form "example.com"',
-    }),
+  website: z.string().regex(/[\w\d\-]+\.[\w\d\-\.]+/, {
+    message: 'Please enter a valid url in the form "example.com"',
+  }),
   email: z.string().email({ message: "Please enter a valid email address" }),
-  phone: z
-    .string()
-    .regex(/^\(\d{3}\) \d{3}-\d{4}$/, {
-      message: "Please enter a valid 10-digit phone number",
-    }),
+  phone: z.string().regex(/^\d{10}$/, {
+    message: "Please enter a valid 10-digit phone number",
+  }),
   address: z.string().min(2, { message: "Please enter an address" }),
   notes: z.string(),
 });
-
 const form3Schema = z.object({
   contactFirstName: z.string().min(2, { message: "Please enter a first name" }),
   contactLastName: z.string().min(2, { message: "Please enter a last name" }),
   contactEmail: z
     .string()
     .email({ message: "Please enter a valid email address" }),
-  contactPhone: z
-    .string()
-    .regex(/^\(\d{3}\) \d{3}-\d{4}$/, {
-      message: "Please enter a valid 10-digit phone number",
-    }),
+  contactPhone: z.string().regex(/^\d{10}$/, {
+    message: "Please enter a valid 10-digit phone number",
+  }),
 });
 
 export function New() {
@@ -80,7 +80,6 @@ export function New() {
     typeof form3Schema
   > | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   // forms
   const form1 = useForm<z.infer<typeof form1Schema>>({
@@ -110,13 +109,11 @@ export function New() {
     },
   });
 
-  // form 1 handlers
+  // handlers
   function onForm1Submit(values: z.infer<typeof form1Schema>) {
     setFormPart1Result(values);
     setFormPart(2);
   }
-
-  // form 2 handlers
   function onForm2Back() {
     setFormPart(1);
   }
@@ -124,8 +121,6 @@ export function New() {
     setFormPart2Result(values);
     setFormPart(3);
   }
-
-  // form 3 handlers
   function onForm3Back(e: React.MouseEvent<HTMLButtonElement>) {
     setFormPart(2);
   }
@@ -134,25 +129,44 @@ export function New() {
     setIsSubmitting(true);
   }
 
-  // effect
+  // handle submissions
   useEffect(() => {
     if (isSubmitting && formPart1Result && formPart2Result && formPart3Result) {
-      const submitForm = async () => {        
+      // define a function to submit the form
+      const submitForm = async () => {
         const res = await addOrg({
           ...formPart1Result,
           ...formPart2Result,
           ...formPart3Result,
+          phone: parsePhone(formPart2Result.phone),
+          contactPhone: parsePhone(formPart3Result.contactPhone),
         });
-        console.log(res);
-        form1.reset();
-        form2.reset();
-        form3.reset();
-        setIsSubmitting(false);
-        setFormPart(4);
-      }
+        if (res) {
+          // reset forms and show success page
+          form1.reset();
+          form2.reset();
+          form3.reset();
+          setIsSubmitting(false);
+          setFormPart(4);
+        } else {
+          // alert user of error
+          alert("There was an error adding the organization to the database.");
+          setIsSubmitting(false);
+        }
+      };
+
+      // call the submit function
       submitForm();
     }
-  }, [isSubmitting]);
+  }, [
+    isSubmitting,
+    formPart1Result,
+    formPart2Result,
+    formPart3Result,
+    form1,
+    form2,
+    form3,
+  ]);
 
   return (
     <Dialog>
@@ -168,12 +182,12 @@ export function New() {
             onSubmit={form1.handleSubmit(onForm1Submit)}
             className={`space-y-4 ${formPart === 1 ? "" : "hidden"}`}
           >
-            <div>
+            <DialogHeader>
               <DialogTitle>New Organization</DialogTitle>
-              <p className="pt-1 text-sm text-muted-foreground">
+              <DialogDescription>
                 Add an organization to the database.
-              </p>
-            </div>
+              </DialogDescription>
+            </DialogHeader>
             <FormField
               control={form1.control}
               name="name"
@@ -183,9 +197,6 @@ export function New() {
                   <FormControl>
                     <Input placeholder="OrgTech" {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Enter the name of the organization.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -211,9 +222,6 @@ export function New() {
                       <SelectItem value="Gov">Government</SelectItem>
                     </SelectContent>
                   </Select>
-                  {/* <FormDescription>
-                    Select the type of organization.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -230,12 +238,12 @@ export function New() {
             onSubmit={form2.handleSubmit(onForm2Submit)}
             className={`space-y-4 ${formPart === 2 ? "" : "hidden"}`}
           >
-            <div>
+            <DialogHeader>
               <DialogTitle>Organization Info</DialogTitle>
-              <p className="pt-1 text-sm text-muted-foreground">
-                Now, let's add some more information.
-              </p>
-            </div>
+              <DialogDescription>
+                Now, let&apos;s add some more information.
+              </DialogDescription>
+            </DialogHeader>
             <FormField
               control={form2.control}
               name="website"
@@ -245,9 +253,6 @@ export function New() {
                   <FormControl>
                     <Input placeholder="orgtech.com" {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Enter the website of the organization.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -261,9 +266,6 @@ export function New() {
                   <FormControl>
                     <Input placeholder="info@orgtech.com" {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Enter the email of the organization.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -275,11 +277,8 @@ export function New() {
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <FormControl>
-                    <Input placeholder="(555) 123-4567" {...field} />
+                    <Input placeholder="5551234567" {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Enter the phone number of the organization.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -296,9 +295,6 @@ export function New() {
                       {...field}
                     />
                   </FormControl>
-                  {/* <FormDescription>
-                    Enter the address of the organization.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -312,18 +308,15 @@ export function New() {
                   <FormControl>
                     <Input placeholder="More info..." {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Other notes about the organization.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="grid pt-4 grid-cols-2 gap-4">
-            <Button onClick={onForm2Back} type="button" variant="secondary">
-              Back
-            </Button>
-            <Button type="submit">Next</Button>
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              <Button onClick={onForm2Back} type="button" variant="secondary">
+                Back
+              </Button>
+              <Button type="submit">Next</Button>
             </div>
           </form>
         </Form>
@@ -334,12 +327,12 @@ export function New() {
             onSubmit={form3.handleSubmit(onForm3Submit)}
             className={`space-y-4 ${formPart === 3 ? "" : "hidden"}`}
           >
-            <div>
+            <DialogHeader>
               <DialogTitle>Contact Info</DialogTitle>
-              <p className="pt-1 text-sm text-muted-foreground">
+              <DialogDescription>
                 Now, add a contact for this organization.
-              </p>
-            </div>
+              </DialogDescription>
+            </DialogHeader>
             <div>
               <FormLabel>Contact Name</FormLabel>
               <div className="my-2 grid w-full grid-cols-2 gap-4">
@@ -368,9 +361,6 @@ export function New() {
                   )}
                 />
               </div>
-              {/* <FormDescription>
-                Enter the contact's first and last name.
-              </FormDescription> */}
             </div>
             <FormField
               control={form3.control}
@@ -381,9 +371,6 @@ export function New() {
                   <FormControl>
                     <Input placeholder="jane@orgtech.com" {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Enter the email of the contact.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -395,35 +382,36 @@ export function New() {
                 <FormItem>
                   <FormLabel>Contact Phone</FormLabel>
                   <FormControl>
-                    <Input placeholder="(555) 765-4321" {...field} />
+                    <Input placeholder="5557654321" {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Enter the phone number of the contact.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="grid pt-4 grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 pt-4">
               <Button onClick={onForm3Back} type="button" variant="secondary">
                 Back
               </Button>
-              <Button type="submit" disabled={isSubmitting}>Submit</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                Submit
+              </Button>
             </div>
           </form>
         </Form>
 
         {/* success page */}
         <div className={`space-y-4 ${formPart === 4 ? "" : "hidden"}`}>
-          <div>
+          <DialogHeader>
             <DialogTitle>Success</DialogTitle>
-            <p className="pt-1 text-sm text-muted-foreground">
+            <DialogDescription>
               Your organization has been added to the database.
-            </p>
-          </div>
-          <div className="grid pt-4 grid-cols-2 gap-4">
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 pt-4">
             <DialogClose asChild>
-              <Button onClick={() => setFormPart(1)} variant="secondary">Close</Button>
+              <Button onClick={() => setFormPart(1)} variant="secondary">
+                Close
+              </Button>
             </DialogClose>
             <Button onClick={() => setFormPart(1)}>Add Another</Button>
           </div>

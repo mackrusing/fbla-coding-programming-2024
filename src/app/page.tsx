@@ -8,6 +8,7 @@ export default function HomePage({
 }: {
   searchParams: { q?: string; p?: string };
 }) {
+  // get the search query and page number from the URL
   let search = searchParams.q ?? "";
   let page = createNumeric(searchParams.p) ?? 1;
 

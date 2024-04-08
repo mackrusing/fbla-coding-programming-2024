@@ -3,8 +3,11 @@ import { db } from "@/db/drizzle";
 import { orgsTable } from "@/db/schema";
 import { like } from "drizzle-orm";
 
-export const dynamic = "force-dynamic"; // defaults to auto
+export const dynamic = "force-dynamic";
 
+/**
+ * Create a JSON export of the database with a given search query.
+ */
 export async function GET(request: Request) {
   const search = new URL(request.url).searchParams.get("q") ?? "";
 

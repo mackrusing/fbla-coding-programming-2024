@@ -1,34 +1,30 @@
-export function createNumeric(str: any) {
+/**
+ * try to turn a string into a number, making sure it is numeric
+ * @param str The string to try
+ * @returns {number | undefined} The nunber if successful, undefined otherwise
+ */
+export function createNumeric(str: any): number | undefined {
   // check string exists
   if (typeof str !== "string") {
     return undefined;
   }
 
   // check each character is numeric
-  for (const char of str) {
-    // there has to be a better way to do this ;(
-    // i miss rust strings
-    if (
-      char !== "0" &&
-      char !== "1" &&
-      char !== "2" &&
-      char !== "3" &&
-      char !== "4" &&
-      char !== "5" &&
-      char !== "6" &&
-      char !== "7" &&
-      char !== "8" &&
-      char !== "9"
-    ) {
-      return undefined;
-    }
+  if (!/^\d+$/.test(str)) {
+    return undefined;
   }
 
   // parse the int
   return parseInt(str, 10);
 }
 
-export function constructHomePageUrl(search: string, page: number) {
+/**
+ * Construct a URL for the home page
+ * @param search The search string
+ * @param page The page number
+ * @returns {string} The URL
+ */
+export function constructHomePageUrl(search: string, page: number): string {
   let urlParams = new URLSearchParams();
 
   if (search) {
@@ -42,7 +38,12 @@ export function constructHomePageUrl(search: string, page: number) {
   return "/?" + urlParams.toString();
 }
 
-export function parseOrgType(type: "Business" | "NonProfit" | "Gov") {
+/**
+ * Parse an organization type into a human readable string
+ * @param type The type to parse
+ * @returns {string} The parsed type
+ */
+export function parseOrgType(type: "Business" | "NonProfit" | "Gov"): string {
   if (type === "NonProfit") {
     return "Non Profit";
   }
@@ -52,4 +53,13 @@ export function parseOrgType(type: "Business" | "NonProfit" | "Gov") {
   }
 
   return type;
+}
+
+/**
+ * Parse a 10-digit phone number into a human readable format
+ * @param phone The phone number to parse
+ * @returns {string} The parsed phone number
+ */
+export function parsePhone(phone: string): string {
+  return phone.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
 }

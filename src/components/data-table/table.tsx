@@ -24,6 +24,7 @@ import {
 import { parseOrgType } from "@/lib/utils";
 
 export function Table({ orgs }: { orgs: Org[] }) {
+  // create the table rows
   let orgRows = orgs.map((org) => (
     <Dialog key={org.id}>
       <DialogTrigger asChild>
@@ -46,6 +47,7 @@ export function Table({ orgs }: { orgs: Org[] }) {
   return <TableBase>{orgRows}</TableBase>;
 }
 
+// the base table component with header
 function TableBase({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-md border">
@@ -63,6 +65,7 @@ function TableBase({ children }: { children: React.ReactNode }) {
   );
 }
 
+// a single row in the table
 function OrgTableRow({ org }: { org: Org }) {
   return (
     <TableRow>
@@ -71,21 +74,22 @@ function OrgTableRow({ org }: { org: Org }) {
         <TypeChip orgType={org.type} />
       </TableCell>
       <TableCell className="hidden sm:table-cell">
-        {org.contactFirstName}
+        <div className="inline-flex">
+          {org.contactFirstName} {org.contactLastName}
+        </div>
       </TableCell>
     </TableRow>
   );
 }
 
+// the dialog content for each row / organization
 function OrgDialogContent({ org }: { org: Org }) {
   return (
     <DialogContent>
-      <div>
+      <DialogHeader>
         <DialogTitle>{org.name}</DialogTitle>
-        <p className="pt-1 text-sm text-muted-foreground">
-          {parseOrgType(org.type)}
-        </p>
-      </div>
+        <DialogDescription>{parseOrgType(org.type)}</DialogDescription>
+      </DialogHeader>
       <UiTable>
         <TableBody>
           <TableRow>

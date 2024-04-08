@@ -3,18 +3,20 @@
 // react
 import { useCopyToClipboard, useDebounce } from "@uidotdev/usehooks";
 import { useState, useEffect } from "react";
-// icons
 
 export function CopyLink({ text }: { text: string }) {
+  // state
   const [_copiedText, copyToClipboard] = useCopyToClipboard();
   const [isAnimating, setIsAnimating] = useState(false);
-  const debouncedIsAnimating = useDebounce(isAnimating, 3000);
+  const debouncedIsAnimating = useDebounce(isAnimating, 3000); // run animation for 3 seconds
 
+  // event handlers
   function handleClick() {
     copyToClipboard(text);
     setIsAnimating(true);
   }
 
+  // animating the alert for coppied text
   useEffect(() => {
     if (debouncedIsAnimating) {
       setIsAnimating(false);
@@ -22,7 +24,7 @@ export function CopyLink({ text }: { text: string }) {
   }, [debouncedIsAnimating]);
 
   return (
-    <span onClick={(_) => handleClick()}>
+    <span onClick={handleClick}>
       <span className="cursor-pointer underline decoration-muted-foreground">
         {text}
       </span>

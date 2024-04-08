@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+  /* color vars */
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -35,6 +36,7 @@
     --radius: 0.5rem;
   }
 
+  /* dark mode color vars */
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;

@@ -16,6 +16,7 @@ export function Pagination({
   page: number;
   next: boolean;
 }) {
+  // construct link urls
   const prevPageUrl = constructHomePageUrl(search, page - 1);
   const nextPageUrl = constructHomePageUrl(search, page + 1);
 
@@ -41,6 +42,7 @@ export function Pagination({
   );
 }
 
+// links that can be disabled
 function PossibleLink({
   href,
   disabled,

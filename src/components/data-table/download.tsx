@@ -22,6 +22,7 @@ export function Download({
   );
 }
 
+// download link that can be disabled
 function PossibleLink({
   href,
   disabled,

@@ -17,11 +17,13 @@ export function Search() {
   const [isSearching, setIsSearching] = useState(false);
   const search = useDebounce(input, 200);
 
+  // event handlers
   function handleChange(value: string) {
     setInput(value);
     setIsSearching(true);
   }
 
+  // update url on search
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     params.delete("p");
@@ -32,7 +34,7 @@ export function Search() {
     }
     router.replace(`${pathname}?${params.toString()}`);
     setIsSearching(false);
-  }, [search]);
+  }, [search, pathname, router]);
 
   return (
     <div className="relative mr-auto w-fit">
