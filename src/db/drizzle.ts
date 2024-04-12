@@ -1,8 +1,7 @@
 // drizzle
 import { InferSelectModel, InferInsertModel } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-// sqlite
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from '@libsql/client';
 // db
 import { orgsTable } from "@/db/schema";
 
@@ -12,7 +11,12 @@ export type NewOrg = InferInsertModel<typeof orgsTable>;
 export type OrgType = "Business" | "NonProfit" | "Gov";
 
 // database
-const sqlite = new Database("db/sqlite.db");
+const DATABASE_URL = process.env["DATABASE_URL"];
+const DATABASE_AUTH_TOKEN = process.env["DATABASE_AUTH_TOKEN"];
+if (!DATABASE_URL || !DATABASE_AUTH_TOKEN) {
+  throw new Error("DATABASE_URL and DATABASE_AUTH_TOKEN must be set");
+}
+const client = createClient({ url: DATABASE_URL, authToken: DATABASE_AUTH_TOKEN });
 
 // interactable db object
-export const db = drizzle(sqlite);
+export const db = drizzle(client);

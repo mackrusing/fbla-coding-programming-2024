@@ -17,13 +17,24 @@ export async function DataTable({
   page: number;
 }) {
   // fetch data from db
-  const data = await db
-    .select()
-    .from(orgsTable)
-    .where(like(orgsTable.name, `%${search}%`))
-    .orderBy(orgsTable.name)
-    .limit(10)
-    .offset((page - 1) * 10);
+  let data;
+
+  if (search === "") {
+      data = await db
+      .select()
+      .from(orgsTable)
+      .orderBy(orgsTable.name)
+      .limit(10)
+      .offset((page - 1) * 10);
+  } else {
+    data = await db
+      .select()
+      .from(orgsTable)
+      .where(like(orgsTable.name, `%${search}%`))
+      .orderBy(orgsTable.name)
+      .limit(10)
+      .offset((page - 1) * 10);
+  }
 
   return (
     <div className="space-y-4">
