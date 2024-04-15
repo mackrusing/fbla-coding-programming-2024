@@ -20,7 +20,7 @@ export async function DataTable({
   let data;
 
   if (search === "") {
-      data = await db
+    data = await db
       .select()
       .from(orgsTable)
       .orderBy(orgsTable.name)

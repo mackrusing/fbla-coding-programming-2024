@@ -1,10 +1,10 @@
 // drizzle
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { pgTable, text, serial } from "drizzle-orm/pg-core";
 
 // table definition
-export const orgsTable = sqliteTable("organizations", {
+export const orgsTable = pgTable("organizations", {
   // org info
-  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   type: text("type", { enum: ["Business", "NonProfit", "Gov"] }).notNull(),
   website: text("website"),
