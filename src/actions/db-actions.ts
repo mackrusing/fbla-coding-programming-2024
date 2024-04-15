@@ -12,7 +12,7 @@ import { db, NewOrg } from "@/db/drizzle";
  */
 export async function addOrg(org: NewOrg): Promise<boolean> {
   const res = await db.insert(orgsTable).values(org);
-  if (res.rowsAffected == 1) {
+  if (res.rowCount == 1) {
     return true;
   } else {
     return false;
