@@ -8,9 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "fmt": "bunx prettier -w ./",
-    "db-generate": "bunx drizzle-kit generate:sqlite",
-    "db-migrate": "bunx drizzle-kit push:sqlite",
-    "db-reset": "curl -X DELETE localhost:3000/demo/reset",
+    "db-migrate": "bunx drizzle-kit push:pg",
     "db-studio": "bunx drizzle-kit studio"
   },
   "trustedDependencies": [
