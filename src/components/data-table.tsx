@@ -1,7 +1,7 @@
 // db
 import { db } from "@/db/drizzle";
 import { orgsTable } from "@/db/schema";
-import { like } from "drizzle-orm";
+import { ilike } from "drizzle-orm";
 // components
 import { Search } from "./data-table/search";
 import { New } from "./data-table/new";
@@ -17,24 +17,13 @@ export async function DataTable({
   page: number;
 }) {
   // fetch data from db
-  let data;
-
-  if (search === "") {
-    data = await db
-      .select()
-      .from(orgsTable)
-      .orderBy(orgsTable.name)
-      .limit(10)
-      .offset((page - 1) * 10);
-  } else {
-    data = await db
-      .select()
-      .from(orgsTable)
-      .where(like(orgsTable.name, `%${search}%`))
-      .orderBy(orgsTable.name)
-      .limit(10)
-      .offset((page - 1) * 10);
-  }
+  let data = await db
+    .select()
+    .from(orgsTable)
+    .where(ilike(orgsTable.name, `%${search}%`))
+    .orderBy(orgsTable.name)
+    .limit(10)
+    .offset((page - 1) * 10);
 
   return (
     <div className="space-y-4">
