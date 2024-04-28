@@ -1,13 +1,11 @@
-// db
-import { db } from "@/db/drizzle";
-import { orgsTable } from "@/db/schema";
-import { ilike } from "drizzle-orm";
 // components
 import { Search } from "./data-table/search";
 import { New } from "./data-table/new";
 import { Download } from "./data-table/download";
 import { Table } from "./data-table/table";
 import { Pagination } from "./data-table/pagination";
+// actions
+import { getOrgs } from "@/actions/db";
 
 export async function DataTable({
   search,
@@ -17,13 +15,7 @@ export async function DataTable({
   page: number;
 }) {
   // fetch data from db
-  let data = await db
-    .select()
-    .from(orgsTable)
-    .where(ilike(orgsTable.name, `%${search}%`))
-    .orderBy(orgsTable.name)
-    .limit(10)
-    .offset((page - 1) * 10);
+  const data = await getOrgs(search, page);
 
   return (
     <div className="space-y-4">

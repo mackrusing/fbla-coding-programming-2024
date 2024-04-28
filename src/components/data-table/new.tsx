@@ -36,7 +36,7 @@ import { PlusIcon } from "lucide-react";
 // react
 import { useState, useEffect } from "react";
 // actions
-import { addOrg } from "@/actions/db-actions";
+import { addOrg } from "@/actions/db";
 // lib
 import { parsePhone } from "@/lib/utils";
 
